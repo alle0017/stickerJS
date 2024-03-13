@@ -550,11 +550,10 @@ export const define = ( name, template, props, watch = [] ) => {
             constructor(){
                   super();
                   if(  props && typeof props === 'object' ){
-                        for( const [k,v] of Object.entries( props ) ){
-                              if( typeof k == 'string' ){
-                                    this[k] = v;
-                              }
-                        }
+                        Object.defineProperties( 
+                              this,
+                              Object.getOwnPropertyDescriptors( props ) 
+                        )
                   }
                   if( this.oninstance ){
                         this.oninstance();

@@ -79,7 +79,7 @@ export class HTMLCustomElement extends HTMLElement {
             if( node.nodeType == Node.TEXT_NODE )
                   return undefined;
             for( const a of node.attributes ){
-                  if( a.value == prop ){
+                  if( this.#getPropName(a.value) == prop ){
                         return a.name;
                   }
             }

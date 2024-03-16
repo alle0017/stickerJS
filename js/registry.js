@@ -547,6 +547,48 @@ export const define = ( name, template, props, watch = [] ) => {
                   return [...this.#elementProperties.values()];
             }
 
+            
+            #checkInitialConditions(){
+                  for( const attr of Object.values( this.conditions ) ){
+                        for( const o of attr ){
+                              if( o.condition() ){
+                                    o.root.append( o.node )
+                                    for( const f of o.fallbacks ){
+                                          f.node.remove()
+                                    }
+                              }else{
+                                    o.node.remove()
+                                    for( const f of o.fallbacks ){
+                                          f.root.append( f.node )
+                                    }
+                              }
+                        }
+                  }
+            }
+            #onEnterCallback(){
+                  if( !this.onenter || typeof this.onenter != 'function' )
+                        return;
+                  const p = this.onenter();
+
+                  if( p instanceof Promise ){
+                        /**@type {HTMLElement[]} */
+                        const fallbacks = this.getAll('[fallback]')
+                        //check if there are any fallbacks
+                        if( fallbacks.length > 0 )
+                        p.then(()=>{
+                              for( const f of fallbacks ){
+                                    f.remove();
+                              }
+                        }).catch(()=>{
+                              for( const f of fallbacks ){
+                                    const node = this.getElementById( f.getAttribute('fallback') );
+                                    if( node )
+                                          node.remove();
+                              }
+                        })
+                  }
+            }
+
             constructor(){
                   super();
                   if(  props && typeof props === 'object' ){
@@ -605,27 +647,8 @@ export const define = ( name, template, props, watch = [] ) => {
                   this.initializeTwoWayBinding()
                   this.conditions = this.initializeConditionalRendering();
                   this.setEvents(events)
-
-                  if( this.onenter && typeof this.onenter == 'function' ){
-                        const p = this.onenter();
-                        if( p instanceof Promise ){
-                              /**@type {HTMLElement[]} */
-                              const fallbacks = this.getAll('[fallback]')
-                              //check if there are any fallbacks
-                              if( fallbacks.length > 0 )
-                              p.then(()=>{
-                                    for( const f of fallbacks ){
-                                          f.remove();
-                                    }
-                              }).catch(()=>{
-                                    for( const f of fallbacks ){
-                                          const node = this.getElementById( f.getAttribute('fallback') );
-                                          if( node )
-                                                node.remove();
-                                    }
-                              })
-                        }
-                  }
+                  this.#onEnterCallback()
+                  this.#checkInitialConditions();
             }
             attributeChangedCallback(name, oldValue, newValue){
                   if( oldValue === newValue ) return;

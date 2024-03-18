@@ -640,6 +640,7 @@ export const define = ( name, template, props, watch = [] ) => {
                   this.shadow.append( dom )
                   if( this.hasAttributes() ){
                         for( const a of this.attributes ){
+                              this[`_${a.name}`] = a.value;
                               this.setProp(a.name, a.value);
                         }
                   }

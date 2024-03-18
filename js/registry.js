@@ -231,11 +231,21 @@ export class HTMLCustomElement extends HTMLElement {
                               });
                         }
                   }
-                  const attribs = code.match(/this.[a-zA-Z0-9_]+/);
+                  const attribs = code.match(/(this.[a-zA-Z0-9_]+|this\[('|`|")[a-zA-Z0-9_]+('|`|")\])/sig);
+                  
 
                   if( attribs ){
                         for( let a of attribs ){
-                              a = a.replace('this.', '');
+
+                              a = a
+                              .replace('this', '')
+                              .replace('.', '')
+                              .replace('[', '')
+                              .replace(']', '')
+                              .replace(/`/gi, '')
+                              .replace(/'/gi, '')
+                              .replace(/"/gi, '')
+                              
                               if( !condBinds[a] ){
                                     condBinds[a] = [{
                                           condition: fn,

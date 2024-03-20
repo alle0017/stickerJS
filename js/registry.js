@@ -231,7 +231,7 @@ export class HTMLCustomElement extends HTMLElement {
                               });
                         }
                   }
-                  const attribs = code.match(/(this.[a-zA-Z0-9_]+|this\[('|`|")[a-zA-Z0-9_]+('|`|")\])/sig);
+                  const attribs = code.match(/(this.[a-zA-Z0-9_]+|this\[('|`|")[a-zA-Z0-9_-]+('|`|")\])/sig);
                   
 
                   if( attribs ){
